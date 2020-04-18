@@ -1,11 +1,22 @@
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   console.log('Resetting split test groups...');
-  chrome.cookies.getAll({url: "https://www.finewineandgoodspirits.com/"}, function(cookies) {
-    for(var i=0; i<cookies.length;i++) {
-      chrome.cookies.remove({url: "https://" + cookies[i].domain  + cookies[i].path, name: cookies[i].name});
-    }
-    console.log(`Reset ${cookies.length} test groups`);
-    sendResponse({success: true});
-  });
+  chrome.browsingData.remove({
+    "origins": ["https://www.finewineandgoodspirits.com"]
+  }, {
+    "cacheStorage": true,
+    "cookies": true,
+    "fileSystems": true,
+    "indexedDB": true,
+    "localStorage": true,
+    "pluginData": true,
+    "serviceWorkers": true,
+    "webSQL": true
+  }, () => sendResponse({success: true}));
   return true;
+});
+
+
+chrome.browserAction.onClicked.addListener(() => {
+  var newURL = "https://www.finewineandgoodspirits.com";
+  chrome.tabs.create({ url: newURL });
 });
